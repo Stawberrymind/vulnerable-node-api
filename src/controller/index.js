@@ -139,6 +139,9 @@ exports.ping = (req, res) => {
 exports.calculate = (req, res) => {
     const { expression } = req.body;
     try {
+        if (typeof expression !== 'string' || expression.length > 256 || !/^[0-9eE+\-*\/().\s]+$/.test(expression)) {
+            return res.status(400).json({ error: 'Invalid expression' });
+        }
         const result = eval(expression);
         return res.json({ result });
     } catch (err) {
