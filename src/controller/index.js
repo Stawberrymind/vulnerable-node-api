@@ -128,7 +128,10 @@ exports.deleteUser = (req, res) => {
 
 exports.ping = (req, res) => {
     const { host } = req.body;
-    exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {
+    if (typeof host !== 'string' || host.length > 253 || !/^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$/.test(host)) {
+        return res.status(400).json({ error: 'Invalid host' });
+    }
+    require('child_process').execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {
         if (error) {
             return res.status(500).json({ error: stderr });
         }
